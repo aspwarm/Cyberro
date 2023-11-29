@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customizable Profile Chat Bot</title>
+  <title>Discord</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
     body {
@@ -191,6 +191,58 @@
         if (file) {
           const reader = new FileReader();
           reader.onload = () => {
+            // Update the profile picture directly
             this.editedProfile.profilePicture = reader.result;
           };
-          reader.readAs
+          reader.readAsDataURL(file);
+        }
+      },
+    },
+    template: `
+      <div>
+        <div class="header">
+          <h3>Discord Chat</h3>
+          <div class="profile" v-if="!isEditingProfile" @click="startEditingProfile">
+            <img :src="currentUser.profilePicture" alt="Profile" style="width: 30px; height: 30px;">
+            <span>{{ currentUser.username + currentUser.tag }}</span>
+            <span v-if="currentUser.username === 'Aspwarm'" class="owner-tag">Owner</span>
+          </div>
+          <div v-else>
+            <input v-model="editedProfile.username" type="text" placeholder="Enter username">
+            <input v-model="editedProfile.tag" type="text" placeholder="Enter tag" maxlength="4">
+            <input type="file" @change="handleFileUpload">
+            <button @click="saveProfileChanges">Save</button>
+          </div>
+        </div>
+        <div class="user-list">
+          <div v-for="user in users" :key="user.username" class="user-list-item">
+            {{ user.username + user.tag }}
+            <button @click="removeUser(user)">Remove</button>
+          </div>
+        </div>
+        <div class="messages">
+          <div v-for="(message, index) in messages" :key="index" class="message">
+            <div class="profile">
+              <img :src="message.user.profilePicture" alt="Profile" style="width: 20px; height: 20px; margin-right: 5px;">
+              <span>{{ message.user.username + message.user.tag }}</span>
+              <span v-if="message.user.username === 'Aspwarm'" class="owner-tag">Owner</span>
+            </div>
+            <p>{{ message.text }}</p>
+            <span class="timestamp">{{ message.timestamp }}</span>
+          </div>
+        </div>
+        <div class="input-container">
+          <input v-model="messageInput" type="text" placeholder="Type your message">
+          <button @click="sendMessage">Send</button>
+        </div>
+        <div class="input-container">
+          <input v-model="addUsernameInput" type="text" placeholder="Enter username">
+          <button @click="addUser">Add User</button>
+        </div>
+      </div>
+    `,
+  });
+</script>
+
+</body>
+</html>
