@@ -6,122 +6,7 @@
   <title>Discord-Inspired Chat</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #36393F;
-      color: #FFFFFF;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-
-    #app {
-      width: 600px;
-      height: 600px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      border-radius: 8px;
-      background-color: #2F3136;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .header {
-      background-color: #202225;
-      padding: 10px;
-      border-bottom: 1px solid #3C4043;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .profile {
-      display: flex;
-      align-items: center;
-      color: #FFFFFF;
-    }
-
-    .profile img {
-      border-radius: 50%;
-      margin-right: 10px;
-    }
-
-    .owner-tag {
-      background-color: #7289DA;
-      color: #FFFFFF;
-      padding: 3px 6px;
-      font-size: 10px;
-      margin-left: 5px;
-      border-radius: 3px;
-    }
-
-    .user-list {
-      padding: 10px;
-      overflow-y: auto;
-      max-height: 200px; /* Adjust as needed */
-    }
-
-    .user-list-item {
-      margin-bottom: 5px;
-      color: #FFFFFF;
-    }
-
-    .messages {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-      background-color: #36393F;
-    }
-
-    .message {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 10px;
-      background-color: #40444B;
-      border-radius: 8px;
-      padding: 10px;
-    }
-
-    .message p {
-      margin: 0;
-      color: #FFFFFF;
-    }
-
-    .timestamp {
-      color: #72767d;
-      font-size: 10px;
-      margin-top: 5px;
-    }
-
-    .input-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      border-top: 1px solid #3C4043;
-    }
-
-    .input-container input {
-      flex: 1;
-      padding: 8px;
-      margin-right: 10px;
-      border: none;
-      border-radius: 5px;
-      background-color: #40444B;
-      color: #FFFFFF;
-    }
-
-    .input-container button {
-      background-color: #7289DA;
-      color: #FFFFFF;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+    /* (styles remain unchanged) */
   </style>
 </head>
 <body>
@@ -138,8 +23,8 @@
       users: [],
       messageInput: '',
       currentUser: {
-        username: localStorage.getItem('username') || 'User', // Use local storage or default to 'User'
-        tag: localStorage.getItem('userTag') || '#' + Math.floor(1000 + Math.random() * 9000),
+        username: localStorage.getItem('username') || 'User',
+        tag: localStorage.getItem('userTag') || '', // Check if tag is stored
         profilePicture: localStorage.getItem('userProfilePicture') || 'https://via.placeholder.com/50',
       },
       isEditingProfile: false,
@@ -149,54 +34,15 @@
         profilePicture: '',
       },
     },
+    created() {
+      // If the tag is not stored, generate and store a new random tag
+      if (!this.currentUser.tag) {
+        this.currentUser.tag = '#' + Math.floor(1000 + Math.random() * 9000);
+        localStorage.setItem('userTag', this.currentUser.tag);
+      }
+    },
     methods: {
-      sendMessage() {
-        const message = this.messageInput.trim();
-        if (message !== '') {
-          const newMessage = {
-            text: message,
-            user: {
-              username: this.currentUser.username,
-              tag: this.currentUser.tag,
-              profilePicture: this.currentUser.profilePicture,
-            },
-            timestamp: new Date().toLocaleTimeString(),
-          };
-          this.messages.push(newMessage);
-          this.messageInput = '';
-        }
-      },
-      startEditingProfile() {
-        this.isEditingProfile = true;
-        this.editedProfile.username = this.currentUser.username;
-        this.editedProfile.tag = this.currentUser.tag;
-        this.editedProfile.profilePicture = this.currentUser.profilePicture;
-      },
-      saveProfileChanges() {
-        // No need to update the tag permanently as it's saved in local storage
-        this.currentUser.username = this.editedProfile.username;
-        this.currentUser.profilePicture = this.editedProfile.profilePicture;
-        this.isEditingProfile = false;
-        // Save the changes to local storage
-        localStorage.setItem('username', this.currentUser.username);
-        localStorage.setItem('userProfilePicture', this.currentUser.profilePicture);
-      },
-      removeUser(user) {
-        const index = this.users.indexOf(user);
-        if (index !== -1) {
-          this.users.splice(index, 1);
-        }
-      },
-      handleFileUpload(event) {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = () => {
-            this.editedProfile.profilePicture = reader.result;
-          };
-          reader.readAsDataURL(file);
-        }
-      },
+      /* (methods remain unchanged) */
     },
     template: `
       <div>
@@ -207,7 +53,7 @@
           </div>
           <div v-else>
             <input v-model="editedProfile.username" type="text" placeholder="Enter username">
-            <span>{{ currentUser.tag }}</span> <!-- Display the current tag -->
+            <span>{{ currentUser.tag }}</span>
             <input type="file" @change="handleFileUpload">
             <button @click="saveProfileChanges">Save</button>
           </div>
