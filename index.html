@@ -3,54 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat App</title>
+  <title>Google Chat Bot</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
       height: 100vh;
-      background-color: #f4f4f4; /* Light gray background color */
+      margin: 0;
     }
 
     #chat-container {
-      flex: 1;
-      width: 400px;
-      overflow: auto;
+      width: 300px;
       border: 1px solid #ccc;
       padding: 10px;
-      margin-bottom: 20px;
-      background-color: #fff; /* White background color */
+      overflow-y: scroll;
+      max-height: 300px;
     }
 
     #message-input {
       width: 100%;
+      padding: 5px;
+    }
+
+    #login-button {
+      background-color: #4285F4;
+      color: #fff;
       padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-
-    #message-input::placeholder {
-      color: #999; /* Light gray placeholder text */
-    }
-
-    button {
-      background-color: #4caf50; /* Green button color */
-      color: #fff; /* White text color */
-      padding: 10px 20px;
       border: none;
-      border-radius: 5px;
       cursor: pointer;
-      font-size: 16px;
-    }
-
-    button:hover {
-      background-color: #45a049; /* Darker green on hover */
     }
   </style>
 </head>
@@ -59,22 +41,27 @@
 <div id="chat-container"></div>
 <input type="text" id="message-input" placeholder="Type your message">
 <button onclick="sendMessage()">Send</button>
+<div id="login-button" onclick="login()">Log in with Google</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.1/socket.io.js"></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
 <script>
-  const socket = io();
+  let user;
 
-  socket.on('chat message', function(msg) {
-    displayMessage(msg);
-  });
+  function onSignIn(googleUser) {
+    user = googleUser;
+    document.getElementById('login-button').style.display = 'none';
+  }
+
+  function login() {
+    gapi.auth2.getAuthInstance().signIn().then(onSignIn);
+  }
 
   function sendMessage() {
     const messageInput = document.getElementById('message-input');
     const message = messageInput.value;
 
     if (message.trim() !== '') {
-      socket.emit('chat message', message);
-      displayMessage('You: ' + message);
+      displayMessage(`${user.getBasicProfile().getName()}: ${message}`);
       messageInput.value = '';
     }
   }
