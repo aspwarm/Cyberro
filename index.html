@@ -7,12 +7,12 @@
   <title>Global Chat</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
-    body {
+     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #36393f; /* Discord-like background color */
-      color: #ffffff;
+      background-color: #36393F;
+      color: #FFFFFF;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -38,14 +38,14 @@
       display: flex;
       flex-direction: column;
       border-radius: 8px;
-      background-color: #36393f; /* Discord-like background color */
+      background-color: #2F3136;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
     .header {
-      background-color: #40444b; /* Discord-like header color */
+      background-color: #202225;
       padding: 10px;
-      border-bottom: 1px solid #3c4043;
+      border-bottom: 1px solid #3C4043;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -55,14 +55,13 @@
       margin-left: 10px;
       font-size: 12px;
       cursor: pointer;
-      color: #7289da; /* Discord-like accent color */
+      color: #7289DA;
     }
 
     .profile {
       display: flex;
       align-items: center;
-      color: #ffffff;
-      margin-right: 10px; /* Added margin to move it a little to the right */
+      color: #FFFFFF;
     }
 
     .profile img {
@@ -71,8 +70,8 @@
     }
 
     .owner-tag {
-      background-color: #7289da; /* Discord-like accent color */
-      color: #ffffff;
+      background-color: #7289DA;
+      color: #FFFFFF;
       padding: 3px 6px;
       font-size: 10px;
       margin-left: 5px;
@@ -87,28 +86,28 @@
 
     .user-list-item {
       margin-bottom: 5px;
-      color: #ffffff;
+      color: #FFFFFF;
     }
 
     .messages {
       flex: 1;
       padding: 10px;
       overflow-y: auto;
-      background-color: #36393f; /* Discord-like background color */
+      background-color: #36393F;
     }
 
     .message {
       display: flex;
       flex-direction: column;
       margin-bottom: 10px;
-      background-color: #40444b; /* Discord-like message box color */
+      background-color: #40444B;
       border-radius: 8px;
       padding: 10px;
     }
 
     .message p {
       margin: 0;
-      color: #ffffff;
+      color: #FFFFFF;
     }
 
     .timestamp {
@@ -122,7 +121,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 10px;
-      border-top: 1px solid #3c4043;
+      border-top: 1px solid #3C4043;
     }
 
     .input-container input {
@@ -131,13 +130,13 @@
       margin-right: 10px;
       border: none;
       border-radius: 5px;
-      background-color: #40444b; /* Discord-like input box color */
-      color: #ffffff;
+      background-color: #40444B;
+      color: #FFFFFF;
     }
 
     .input-container button {
-      background-color: #7289da; /* Discord-like accent color */
-      color: #ffffff;
+      background-color: #7289DA;
+      color: #FFFFFF;
       border: none;
       padding: 8px 15px;
       border-radius: 5px;
@@ -148,7 +147,7 @@
       position: absolute;
       bottom: 50px;
       left: 10px;
-      background-color: #36393f; /* Discord-like background color */
+      background-color: #2F3136;
       border-radius: 8px;
       padding: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -160,8 +159,8 @@
     }
 
     .user-settings-popup button {
-      background-color: #7289da; /* Discord-like accent color */
-      color: #ffffff;
+      background-color: #7289DA;
+      color: #FFFFFF;
       border: none;
       padding: 8px 15px;
       border-radius: 5px;
@@ -170,7 +169,7 @@
 
     .user-settings-popup button.cancel {
       margin-left: 10px;
-      background-color: #36393f; /* Discord-like background color */
+      background-color: #36393F;
     }
 
     .user-settings-popup.active {
@@ -182,27 +181,29 @@
 <body>
 
   <div id="app">
-    <div class="profile" @click="startEditingProfile">
-      <img :src="currentUser.profilePicture" alt="Profile" style="width: 30px; height: 30px; border-radius: 50%;">
-      <div>
-        <span>{{ currentUser.username }}</span>
-        <span class="owner-tag">{{ currentUser.tag }}</span>
-      </div>
+    <!-- Left Sidebar for Group Chats and Friends -->
+    <div class="sidebar">
+      <h2>Group Chats</h2>
+      <ul>
+        <li v-for="group in groups" :key="group.id" @click="joinGroup(group)">
+          {{ group.name }}
+        </li>
+      </ul>
+      <h2>Friends</h2>
+      <ul>
+        <li v-for="friend in friends" :key="friend.id" @click="startPrivateChat(friend)">
+          {{ friend.username }}
+        </li>
+      </ul>
     </div>
 
+    <!-- Main Content for Chat -->
     <div class="main-content">
-      <div class="chat-container">
-        <div class="header">
-          <div class="user-settings" @click="toggleUserSettings">User Settings</div>
-        </div>
-        <div class="user-list">
-          <div v-for="user in users" :key="user.username" class="user-list-item">
-            {{ user.username + user.tag }}
-            <button @click="removeUser(user)">Remove</button>
-          </div>
-        </div>
+      <!-- Display current group or private chat -->
+      <div v-if="currentChat">
+        <h2>{{ currentChat.name }}</h2>
         <div class="messages">
-          <div v-for="(message, index) in messages" :key="index" class="message">
+          <div v-for="(message, index) in currentChat.messages" :key="index" class="message">
             <div class="profile">
               <img :src="message.user.profilePicture" alt="Profile" style="width: 20px; height: 20px; margin-right: 5px; border-radius: 50%;">
               <span>{{ message.user.username + message.user.tag }}</span>
@@ -213,19 +214,11 @@
         </div>
         <div class="input-container">
           <input v-model="messageInput" type="text" placeholder="Type your message">
-          <button @click="toggleEmojiPicker">😊</button>
-          <div v-if="showEmojiPicker" class="emoji-picker">
-            <button v-for="emoji in emojiList" :key="emoji" @click="selectEmoji(emoji)">{{ emoji }}</button>
-          </div>
           <button @click="sendMessage">Send</button>
         </div>
-        <!-- Move the profile section here -->
       </div>
-      <div class="user-settings-popup" :class="{ 'active': showUserSettings }">
-        <input v-model="editedProfile.username" type="text" placeholder="Enter username">
-        <input type="file" @change="handleFileUpload">
-        <button @click="saveProfileChanges">Save</button>
-        <button class="cancel" @click="toggleUserSettings">Cancel</button>
+      <div v-else>
+        <p>Select a group or friend to start chatting.</p>
       </div>
     </div>
   </div>
@@ -236,136 +229,49 @@
     new Vue({
       el: '#app',
       data: {
-        messages: [],
-        users: [],
+        groups: [
+          { id: 1, name: 'Group 1', messages: [] },
+          { id: 2, name: 'Group 2', messages: [] },
+           { id: 3, name: 'Group 3', messages: [] },
+          { id: 4, name: 'Group 4', messages: [] },
+           { id: 5, name: 'Group 5', messages: [] },
+          { id: 6, name: 'Group 6', messages: [] },
+        ],
+        friends: [
+          { id: 101, username: 'Friend 1', messages: [] },
+          { id: 102, username: 'Friend 2', messages: [] },
+           { id: 103, username: 'Friend 3', messages: [] },
+          { id: 104, username: 'Friend 4', messages: [] },
+          { id: 105, username: 'Friend 5', messages: [] },
+           { id: 106, username: 'Friend 6', messages: [] },
+        ],
+        currentChat: null, // To keep track of the current chat (group or private)
         messageInput: '',
-        currentUser: {
-          username: localStorage.getItem('username') || 'User',
-          tag: localStorage.getItem('userTag') || '',
-          profilePicture: localStorage.getItem('userProfilePicture') || 'https://via.placeholder.com/50',
-        },
-        isEditingProfile: false,
-        editedProfile: {
-          username: '',
-          tag: '',
-          profilePicture: '',
-        },
-        showEmojiPicker: false,
-        selectedEmoji: '',
-        emojiList: ['😊', '😂', '😍', '👍', '👎', '🙌', '🎉', '🔥', '❤️', '🚀'],
-        showUserSettings: false,
-      },
-      created() {
-        if (!this.currentUser.tag) {
-          this.currentUser.tag = '#' + Math.floor(1000 + Math.random() * 9000);
-          localStorage.setItem('userTag', this.currentUser.tag);
-        }
-
-        // Simulating user join
-        this.users.push({
-          username: this.currentUser.username,
-          tag: this.currentUser.tag,
-          profilePicture: this.currentUser.profilePicture,
-        });
       },
       methods: {
+        joinGroup(group) {
+          this.currentChat = group;
+        },
+        startPrivateChat(friend) {
+          this.currentChat = friend;
+        },
         sendMessage() {
-          const message = this.messageInput.trim();
-          if (message !== '') {
+          if (this.messageInput.trim() !== '') {
             const newMessage = {
-              text: message,
+              text: this.messageInput.trim(),
               user: {
-                username: this.currentUser.username,
-                tag: this.currentUser.tag,
-                profilePicture: this.currentUser.profilePicture,
+                username: 'User', // Replace with actual user info
+                tag: '#1234', // Replace with actual user info
+                profilePicture: 'https://via.placeholder.com/50', // Replace with actual user info
               },
               timestamp: new Date().toLocaleTimeString(),
             };
-            this.messages.push(newMessage);
+
+            this.currentChat.messages.push(newMessage);
             this.messageInput = '';
           }
         },
-        startEditingProfile() {
-          this.isEditingProfile = true;
-          this.editedProfile.username = this.currentUser.username;
-          this.editedProfile.tag = this.currentUser.tag;
-          this.editedProfile.profilePicture = this.currentUser.profilePicture;
-        },
-        saveProfileChanges() {
-          this.currentUser.username = this.editedProfile.username;
-          this.editedProfile.tag = this.currentUser.tag;
-          this.currentUser.profilePicture = this.editedProfile.profilePicture;
-          this.isEditingProfile = false;
-        },
-        removeUser(user) {
-          const index = this.users.indexOf(user);
-          if (index !== -1) {
-            this.users.splice(index, 1);
-          }
-        },
-        handleFileUpload(event) {
-          const file = event.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-              this.editedProfile.profilePicture = reader.result;
-            };
-            reader.readAsDataURL(file);
-          }
-        },
-        toggleEmojiPicker() {
-          this.showEmojiPicker = !this.showEmojiPicker;
-        },
-        selectEmoji(emoji) {
-          this.selectedEmoji = emoji;
-          this.messageInput += emoji;
-          this.showEmojiPicker = false;
-        },
-        toggleUserSettings() {
-          this.showUserSettings = !this.showUserSettings;
-        },
       },
-      template: `
-        <div id="app">
-          <div class="main-content">
-            <div class="chat-container">
-              <div class="header">
-                <div class="user-settings" @click="toggleUserSettings">User Settings</div>
-              </div>
-              <div class="user-list">
-                <div v-for="user in users" :key="user.username" class="user-list-item">
-                  {{ user.username + user.tag }}
-                  <button @click="removeUser(user)">Remove</button>
-                </div>
-              </div>
-              <div class="messages">
-                <div v-for="(message, index) in messages" :key="index" class="message">
-                  <div class="profile">
-                    <img :src="message.user.profilePicture" alt="Profile" style="width: 20px; height: 20px; margin-right: 5px; border-radius: 50%;">
-                    <span>{{ message.user.username + message.user.tag }}</span>
-                  </div>
-                  <p>{{ message.text }}</p>
-                  <span class="timestamp">{{ message.timestamp }}</span>
-                </div>
-              </div>
-              <div class="input-container">
-                <input v-model="messageInput" type="text" placeholder="Type your message">
-                <button @click="toggleEmojiPicker">😊</button>
-                <div v-if="showEmojiPicker" class="emoji-picker">
-                  <button v-for="emoji in emojiList" :key="emoji" @click="selectEmoji(emoji)">{{ emoji }}</button>
-                </div>
-                <button @click="sendMessage">Send</button>
-              </div>
-            </div>
-          </div>
-          <div class="user-settings-popup" :class="{ 'active': showUserSettings }">
-            <input v-model="editedProfile.username" type="text" placeholder="Enter username">
-            <input type="file" @change="handleFileUpload">
-            <button @click="saveProfileChanges">Save</button>
-            <button class="cancel" @click="toggleUserSettings">Cancel</button>
-          </div>
-        </div>
-      `,
     });
   </script>
 
