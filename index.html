@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Discord-Inspired Chat with GIFs</title>
+  <title>Discord-Inspired Chat</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
-      body {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    body {
+      font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
       background-color: #36393F;
@@ -38,15 +38,10 @@
       align-items: center;
     }
 
-    .header h3 {
-      margin: 0;
-      font-weight: 700;
-      font-size: 16px;
-    }
-
     .profile {
       display: flex;
       align-items: center;
+      color: #FFFFFF;
     }
 
     .profile img {
@@ -66,26 +61,39 @@
     .user-list {
       padding: 10px;
       overflow-y: auto;
+      max-height: 200px; /* Adjust as needed */
     }
 
     .user-list-item {
       margin-bottom: 5px;
+      color: #FFFFFF;
     }
 
     .messages {
       flex: 1;
       padding: 10px;
       overflow-y: auto;
+      background-color: #36393F;
     }
 
     .message {
       display: flex;
       flex-direction: column;
       margin-bottom: 10px;
+      background-color: #40444B;
+      border-radius: 8px;
+      padding: 10px;
     }
 
     .message p {
       margin: 0;
+      color: #FFFFFF;
+    }
+
+    .timestamp {
+      color: #72767d;
+      font-size: 10px;
+      margin-top: 5px;
     }
 
     .input-container {
@@ -126,10 +134,9 @@
   new Vue({
     el: '#app',
     data: {
-     messages: [],
+      messages: [],
       users: [],
       messageInput: '',
-      addUsernameInput: '',
       currentUser: {
         username: 'User',
         tag: '#0000', // Placeholder tag
@@ -141,8 +148,6 @@
         tag: '',
         profilePicture: '',
       },
-    },
-      gifInput: '', // New property to store the selected GIF
     },
     methods: {
       sendMessage() {
@@ -173,15 +178,6 @@
         this.currentUser.profilePicture = this.editedProfile.profilePicture;
         this.isEditingProfile = false;
       },
-      addUser() {
-        const username = this.addUsernameInput.trim();
-        if (username !== '') {
-          const tag = '#' + Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit tag
-          const newUser = { username, tag };
-          this.users.push(newUser);
-          this.addUsernameInput = '';
-        }
-      },
       removeUser(user) {
         const index = this.users.indexOf(user);
         if (index !== -1) {
@@ -193,44 +189,18 @@
         if (file) {
           const reader = new FileReader();
           reader.onload = () => {
-            // Update the profile picture directly
             this.editedProfile.profilePicture = reader.result;
           };
           reader.readAsDataURL(file);
         }
       },
     },
-
-      // New method to handle GIF selection
-      selectGif(gif) {
-        this.messageInput += gif; // Append the selected GIF to the message input
-        this.gifInput = ''; // Clear the GIF input after selecting
-      },
-
-      // New method to fetch GIFs from Giphy API
-      searchGifs() {
-        const apiKey = 'dAAg452chQgEiTQaAXSeZ7Me1jCtT98U';
-        const apiUrl = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${this.gifInput}&limit=5`;
-
-        axios.get(apiUrl)
-          .then(response => {
-            const gifs = response.data.data.map(gif => gif.images.fixed_height.url);
-            // Render the fetched GIFs or update your UI accordingly
-            console.log(gifs);
-          })
-          .catch(error => {
-            console.error('Error fetching GIFs:', error);
-          });
-      },
-    },
-    template: 
+    template: `
       <div>
         <div class="header">
-          <h3>Discord Chat</h3>
           <div class="profile" v-if="!isEditingProfile" @click="startEditingProfile">
             <img :src="currentUser.profilePicture" alt="Profile" style="width: 30px; height: 30px;">
             <span>{{ currentUser.username + currentUser.tag }}</span>
-            <span v-if="currentUser.username === 'Aspwarm'" class="owner-tag">Owner</span>
           </div>
           <div v-else>
             <input v-model="editedProfile.username" type="text" placeholder="Enter username">
@@ -250,7 +220,6 @@
             <div class="profile">
               <img :src="message.user.profilePicture" alt="Profile" style="width: 20px; height: 20px; margin-right: 5px;">
               <span>{{ message.user.username + message.user.tag }}</span>
-              <span v-if="message.user.username === 'Aspwarm'" class="owner-tag">Owner</span>
             </div>
             <p>{{ message.text }}</p>
             <span class="timestamp">{{ message.timestamp }}</span>
@@ -259,23 +228,6 @@
         <div class="input-container">
           <input v-model="messageInput" type="text" placeholder="Type your message">
           <button @click="sendMessage">Send</button>
-        </div>
-        <div class="input-container">
-          <input v-model="addUsernameInput" type="text" placeholder="Enter username">
-          <button @click="addUser">Add User</button>
-        </div>
-      </div>
-    `,
-  });
-      <div>
-        <!-- ... (your existing HTML structure) ... -->
-
-        <div class="input-container">
-          <input v-model="messageInput" type="text" placeholder="Type your message">
-          <button @click="searchGifs">Search GIFs</button>
-          <input v-model="gifInput" type="text" placeholder="Search GIFs">
-          <!-- Render GIFs here based on the search results -->
-          <!-- You can use a separate component for displaying GIFs -->
         </div>
       </div>
     `,
