@@ -36,13 +36,84 @@
   new Vue({
     el: '#app',
     data: {
-      // ... (existing data)
+      messages: [],
+      users: [],
+      messageInput: '',
+      addUsernameInput: '',
+      currentUser: {
+        username: 'User',
+        tag: '#' + Math.floor(1000 + Math.random() * 9000),
+        profilePicture: 'https://via.placeholder.com/50',
+      },
+      isEditingProfile: false,
+      editedProfile: {
+        username: '',
+        tag: '',
+        profilePicture: '',
+      },
       groups: [],
       selectedGroup: null,
     },
     methods: {
-      // ... (existing methods)
+      sendMessage() {
+        const message = this.messageInput.trim();
+        if (message !== '') {
+          const newMessage = {
+            text: message,
+            user: {
+              username: this.currentUser.username,
+              tag: this.currentUser.tag,
+              profilePicture: this.currentUser.profilePicture,
+            },
+            timestamp: new Date().toLocaleTimeString(),
+          };
+          this.messages.push(newMessage);
+          this.messageInput = '';
+        }
+      },
+      startEditingProfile() {
+        this.isEditingProfile = true;
+        this.editedProfile.username = this.currentUser.username;
+        this.editedProfile.tag = this.currentUser.tag;
+        this.editedProfile.profilePicture = this.currentUser.profilePicture;
+      },
+      saveProfileChanges() {
+        this.currentUser.username = this.editedProfile.username;
+        this.currentUser.tag = this.editedProfile.tag;
+        this.currentUser.profilePicture = this.editedProfile.profilePicture;
+        this.isEditingProfile = false;
+      },
+      addUser() {
+        const username = this.addUsernameInput.trim();
+        if (username !== '') {
+          const isUsernameTaken = this.users.some(user => user.username === username);
 
+          if (!isUsernameTaken) {
+            const tag = '#' + Math.floor(1000 + Math.random() * 9000);
+            const newUser = { username, tag };
+            this.users.push(newUser);
+            this.addUsernameInput = '';
+          } else {
+            alert('Username is already taken. Please choose another.');
+          }
+        }
+      },
+      removeUser(user) {
+        const index = this.users.indexOf(user);
+        if (index !== -1) {
+          this.users.splice(index, 1);
+        }
+      },
+      handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            this.editedProfile.profilePicture = reader.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      },
       createGroup() {
         const groupName = prompt('Enter the group name:');
         if (groupName) {
@@ -54,11 +125,9 @@
           this.selectedGroup = newGroup;
         }
       },
-
       selectGroup(group) {
         this.selectedGroup = group;
       },
-
       leaveGroup() {
         this.selectedGroup = null;
       },
@@ -66,7 +135,18 @@
     template: `
       <div>
         <div class="header">
-          <!-- ... (existing header) -->
+          <h3>Discord Chat</h3>
+          <div class="profile" v-if="!isEditingProfile" @click="startEditingProfile">
+            <img :src="currentUser.profilePicture" alt="Profile" style="width: 30px; height: 30px;">
+            <span>{{ currentUser.username + currentUser.tag }}</span>
+            <span v-if="currentUser.username === 'Aspwarm'" class="owner-tag">Owner</span>
+          </div>
+          <div v-else>
+            <input v-model="editedProfile.username" type="text" placeholder="Enter username">
+            <input v-model="editedProfile.tag" type="text" placeholder="Enter tag" :readonly="true" maxlength="4">
+            <input type="file" @change="handleFileUpload">
+            <button @click="saveProfileChanges">Save</button>
+          </div>
         </div>
         <div class="group-list">
           <div v-for="group in groups" :key="group.name" class="group-list-item" @click="selectGroup(group)">
@@ -75,7 +155,15 @@
           <button @click="createGroup">Create Group</button>
         </div>
         <div v-if="selectedGroup" class="messages">
-          <!-- ... (existing messages section) -->
+          <div v-for="(message, index) in selectedGroup.messages" :key="index" class="message">
+            <div class="profile">
+              <img :src="message.user.profilePicture" alt="Profile" style="width: 20px; height: 20px; margin-right: 5px;">
+              <span>{{ message.user.username + message.user.tag }}</span>
+              <span v-if="message.user.username === 'Aspwarm'" class="owner-tag">Owner</span>
+            </div>
+            <p>{{ message.text }}</p>
+            <span class="timestamp">{{ message.timestamp }}</span>
+          </div>
         </div>
         <div class="input-container">
           <input v-model="messageInput" type="text" placeholder="Type your message">
