@@ -3,8 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customizable Profile Chat Bot</title>
+  <title>Discord</title>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #36393F;
+      color: #FFFFFF;
+    }
+
+    #app {
+      width: 600px;
+      margin: 20px auto;
+      border-radius: 8px;
+      background-color: #2F3136;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      background-color: #202225;
+      padding: 10px;
+      border-bottom: 1px solid #3C4043;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h2 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .messages {
+      padding: 10px;
+      overflow-y: auto;
+      max-height: 400px;
+    }
+
+    .message {
+      margin-bottom: 10px;
+    }
+
+    .message p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .input-container {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-top: 1px solid #3C4043;
+    }
+
+    .input-container input {
+      flex: 1;
+      padding: 8px;
+      margin-right: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #40444B;
+      color: #FFFFFF;
+    }
+
+    .input-container button {
+      background-color: #7289DA;
+      color: #FFFFFF;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
@@ -75,18 +148,17 @@
     },
     template: `
       <div>
-        <div>
-          <button @click="createGroup">Create Group</button>
+        <div class="header">
+          <h2>{{ selectedGroup ? selectedGroup.name : 'Select a Group' }}</h2>
         </div>
-        <div v-if="selectedGroup">
-          <h2>{{ selectedGroup.name }}</h2>
-          <div v-for="(message, index) in selectedGroup.messages" :key="index">
-            <p>{{ message.user.username + message.user.tag }}: {{ message.text }}</p>
+        <div class="messages">
+          <div v-for="(message, index) in selectedGroup ? selectedGroup.messages : []" :key="index" class="message">
+            <p><span style="color: #7289DA;">{{ message.user.username + message.user.tag }}</span>: {{ message.text }}</p>
           </div>
-          <div>
-            <input v-model="messageInput" type="text" placeholder="Type your message">
-            <button @click="sendMessage">Send</button>
-          </div>
+        </div>
+        <div class="input-container">
+          <input v-model="messageInput" type="text" placeholder="Type your message">
+          <button @click="sendMessage">Send</button>
         </div>
       </div>
     `,
