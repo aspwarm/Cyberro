@@ -62,6 +62,7 @@
       display: flex;
       align-items: center;
       color: #ffffff;
+      margin-right: 10px; /* Added margin to move it a little to the right */
     }
 
     .profile img {
@@ -311,7 +312,7 @@
               <!-- Move the profile section here -->
               <div class="profile" @click="startEditingProfile">
                 <img :src="currentUser.profilePicture" alt="Profile" style="width: 30px; height: 30px; border-radius: 50%;">
-                <div>
+                <div style="margin-left: 10px;"> <!-- Added margin to move it a little to the right -->
                   <span>{{ currentUser.username }}</span>
                   <span class="owner-tag">{{ currentUser.tag }}</span>
                 </div>
