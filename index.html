@@ -3,76 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Chat Bot</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    #chat-container {
-      width: 300px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      overflow-y: scroll;
-      max-height: 300px;
-    }
-
-    #message-input {
-      width: 100%;
-      padding: 5px;
-    }
-
-    #login-button {
-      background-color: #4285F4;
-      color: #fff;
-      padding: 10px;
-      border: none;
-      cursor: pointer;
-    }
-  </style>
+  <title>Profile Chat Bot</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
 
-<div id="chat-container"></div>
-<input type="text" id="message-input" placeholder="Type your message">
-<button onclick="sendMessage()">Send</button>
-<div id="login-button" onclick="login()">Log in with Google</div>
+<div id="app"></div>
 
-<script src="https://apis.google.com/js/platform.js" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-  let user;
-
-  function onSignIn(googleUser) {
-    user = googleUser;
-    document.getElementById('login-button').style.display = 'none';
-  }
-
-  function login() {
-    gapi.auth2.getAuthInstance().signIn().then(onSignIn);
-  }
-
-  function sendMessage() {
-    const messageInput = document.getElementById('message-input');
-    const message = messageInput.value;
-
-    if (message.trim() !== '') {
-      displayMessage(`${user.getBasicProfile().getName()}: ${message}`);
-      messageInput.value = '';
-    }
-  }
-
-  function displayMessage(msg) {
-    const chatContainer = document.getElementById('chat-container');
-    const messageElement = document.createElement('div');
-    messageElement.textContent = msg;
-    chatContainer.appendChild(messageElement);
-    chatContainer.scrollTop = chatContainer.scrollHeight; // Auto-scroll to the bottom
-  }
+  new Vue({
+    el: '#app',
+    data: {
+      messages: [],
+      messageInput: '',
+      currentUser: {
+        username: 'User',
+        profilePicture: 'https://via.placeholder.com/50', // Placeholder image URL
+      },
+    },
+    methods: {
+      sendMessage() {
+        const message = this.messageInput.trim();
+        if (message !== '') {
+          const newMessage = {
+            text: message,
+            user: this.currentUser,
+            timestamp: new Date().toLocaleTimeString(),
+          };
+          this.messages.push(newMessage);
+          this.messageInput = '';
+        }
+      },
+    },
+    template: `
+      <div class="container mt-5">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header">Chat Bot</div>
+              <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                <div v-for="(message, index) in messages" :key="index" class="mb-3">
+                  <div class="d-flex align-items-center">
+                    <img :src="message.user.profilePicture" alt="Profile" class="rounded-circle mr-2" style="width: 30px; height: 30px;">
+                    <strong>{{ message.user.username }}</strong>
+                  </div>
+                  <p class="mb-0">{{ message.text }}</p>
+                  <small class="text-muted">{{ message.timestamp }}</small>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="input-group">
+                  <input v-model="messageInput" @keyup.enter="sendMessage" type="text" class="form-control" placeholder="Type your message">
+                  <button @click="sendMessage" class="btn btn-primary">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+  });
 </script>
 
 </body>
