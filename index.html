@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Discord</title>
+  <title>Customizable Profile Chat Bot</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
     body {
@@ -52,6 +52,15 @@
     .profile img {
       border-radius: 50%;
       margin-right: 10px;
+    }
+
+    .owner-tag {
+      background-color: #7289DA;
+      color: #FFFFFF;
+      padding: 3px 6px;
+      font-size: 10px;
+      margin-left: 5px;
+      border-radius: 3px;
     }
 
     .messages {
@@ -154,6 +163,7 @@
           <div class="profile" v-if="!isEditingProfile" @click="startEditingProfile">
             <img :src="currentUser.profilePicture" alt="Profile" style="width: 30px; height: 30px;">
             <span>{{ currentUser.username }}</span>
+            <span v-if="currentUser.username === 'Aspwarm'" class="owner-tag">Owner</span>
           </div>
           <div v-else>
             <input v-model="editedProfile.username" type="text" placeholder="Enter username">
@@ -166,6 +176,7 @@
             <div class="profile">
               <img :src="message.user.profilePicture" alt="Profile" style="width: 20px; height: 20px; margin-right: 5px;">
               <strong>{{ message.user.username }}</strong>
+              <span v-if="message.user.username === 'Aspwarm'" class="owner-tag">Owner</span>
             </div>
             <p>{{ message.text }}</p>
             <small class="text-muted">{{ message.timestamp }}</small>
@@ -173,49 +184,4 @@
         </div>
         <div class="input-container">
           <input v-model="messageInput" @keyup.enter="sendMessage" type="text" placeholder="Type your message">
-          <button @click="sendMessage">Send</button>
-        </div>
-      </div>
-    `,
-  });
-</script>
-
-</body>
-</html>
-
-<!-- ... (previous code) ... -->
-
-<template>
-  <div>
-    <div class="header">
-      <h3>Discord Chat</h3>
-      <div class="profile" v-if="!isEditingProfile" @click="startEditingProfile">
-        <img :src="currentUser.profilePicture" alt="Profile" style="width: 30px; height: 30px;">
-        <span>{{ currentUser.username }}</span>
-        <span v-if="currentUser.username === 'Aspwarm'" class="owner-tag">Owner</span>
-      </div>
-      <div v-else>
-        <input v-model="editedProfile.username" type="text" placeholder="Enter username">
-        <input v-model="editedProfile.profilePicture" type="text" placeholder="Enter profile picture URL">
-        <button @click="saveProfileChanges">Save</button>
-      </div>
-    </div>
-    <div class="messages">
-      <div v-for="(message, index) in messages" :key="index" class="message">
-        <div class="profile">
-          <img :src="message.user.profilePicture" alt="Profile" style="width: 20px; height: 20px; margin-right: 5px;">
-          <strong>{{ message.user.username }}</strong>
-          <span v-if="message.user.username === 'Aspwarm'" class="owner-tag">Owner</span>
-        </div>
-        <p>{{ message.text }}</p>
-        <small class="text-muted">{{ message.timestamp }}</small>
-      </div>
-    </div>
-    <div class="input-container">
-      <input v-model="messageInput" @keyup.enter="sendMessage" type="text" placeholder="Type your message">
-      <button @click="sendMessage">Send</button>
-    </div>
-  </div>
-</template>
-
-<!-- ... (rest of the code) ... -->
+          <
