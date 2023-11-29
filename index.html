@@ -139,8 +139,8 @@
       messageInput: '',
       currentUser: {
         username: 'User',
-        tag: '#0000', // Placeholder tag
-        profilePicture: 'https://via.placeholder.com/50', // Placeholder image URL
+        tag: '#' + Math.floor(1000 + Math.random() * 9000), // Randomized tag
+        profilePicture: 'https://via.placeholder.com/50',
       },
       isEditingProfile: false,
       editedProfile: {
@@ -173,8 +173,8 @@
         this.editedProfile.profilePicture = this.currentUser.profilePicture;
       },
       saveProfileChanges() {
+        // No need to update the tag permanently as it's randomized and saved forever
         this.currentUser.username = this.editedProfile.username;
-        this.currentUser.tag = this.editedProfile.tag;
         this.currentUser.profilePicture = this.editedProfile.profilePicture;
         this.isEditingProfile = false;
       },
@@ -204,7 +204,7 @@
           </div>
           <div v-else>
             <input v-model="editedProfile.username" type="text" placeholder="Enter username">
-            <input v-model="editedProfile.tag" type="text" placeholder="Enter tag" maxlength="4">
+            <span>{{ currentUser.tag }}</span> <!-- Display the current randomized tag -->
             <input type="file" @change="handleFileUpload">
             <button @click="saveProfileChanges">Save</button>
           </div>
