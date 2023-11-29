@@ -4,42 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Customizable Profile Chat Bot</title>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       margin: 0;
       padding: 0;
       background-color: #36393F;
       color: #FFFFFF;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       height: 100vh;
     }
 
     #app {
-      width: 800px;
+      width: 600px;
+      height: 600px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
       border-radius: 8px;
       background-color: #2F3136;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      display: flex;
-      height: 70vh;
-      overflow: hidden;
-    }
-
-    .sidebar {
-      width: 20%;
-      background-color: #36393F;
-      padding: 10px;
-      overflow-y: auto;
-      border-right: 1px solid #3C4043;
-    }
-
-    .chat-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
     }
 
     .header {
@@ -51,10 +38,38 @@
       align-items: center;
     }
 
-    .header h2 {
+    .header h3 {
       margin: 0;
       font-weight: 700;
       font-size: 16px;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+    }
+
+    .profile img {
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .owner-tag {
+      background-color: #7289DA;
+      color: #FFFFFF;
+      padding: 3px 6px;
+      font-size: 10px;
+      margin-left: 5px;
+      border-radius: 3px;
+    }
+
+    .user-list {
+      padding: 10px;
+      overflow-y: auto;
+    }
+
+    .user-list-item {
+      margin-bottom: 5px;
     }
 
     .messages {
@@ -64,16 +79,18 @@
     }
 
     .message {
+      display: flex;
+      flex-direction: column;
       margin-bottom: 10px;
     }
 
     .message p {
       margin: 0;
-      font-size: 14px;
     }
 
     .input-container {
       display: flex;
+      justify-content: space-between;
       align-items: center;
       padding: 10px;
       border-top: 1px solid #3C4043;
@@ -97,45 +114,33 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
-    .user-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .user-list-item {
-      padding: 8px;
-      margin-bottom: 5px;
-      background-color: #202225;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .user-list-item:hover {
-      background-color: #7289DA;
-    }
   </style>
 </head>
 <body>
 
 <div id="app"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
   new Vue({
     el: '#app',
     data: {
       messages: [],
+      users: [],
       messageInput: '',
+      addUsernameInput: '',
       currentUser: {
         username: 'User',
-        tag: '#' + Math.floor(1000 + Math.random() * 9000),
+        tag: '#0000', // Placeholder tag
+        profilePicture: 'https://via.placeholder.com/50', // Placeholder image URL
       },
-      groups: [],
-      selectedGroup: null,
-    },
-    mounted() {
-      this.loadFromLocalStorage();
+      isEditingProfile: false,
+      editedProfile: {
+        username: '',
+        tag: '',
+        profilePicture: '',
+      },
     },
     methods: {
       sendMessage() {
@@ -146,85 +151,98 @@
             user: {
               username: this.currentUser.username,
               tag: this.currentUser.tag,
+              profilePicture: this.currentUser.profilePicture,
             },
             timestamp: new Date().toLocaleTimeString(),
           };
-          this.selectedGroup.messages.push(newMessage);
+          this.messages.push(newMessage);
           this.messageInput = '';
-          this.saveToLocalStorage();
         }
       },
-      createGroup() {
-        const groupName = prompt('Enter the group name:');
-        if (groupName) {
-          const newGroup = {
-            name: groupName,
-            messages: [],
+      startEditingProfile() {
+        this.isEditingProfile = true;
+        this.editedProfile.username = this.currentUser.username;
+        this.editedProfile.tag = this.currentUser.tag;
+        this.editedProfile.profilePicture = this.currentUser.profilePicture;
+      },
+      saveProfileChanges() {
+        this.currentUser.username = this.editedProfile.username;
+        this.currentUser.tag = this.editedProfile.tag;
+        this.currentUser.profilePicture = this.editedProfile.profilePicture;
+        this.isEditingProfile = false;
+      },
+      addUser() {
+        const username = this.addUsernameInput.trim();
+        if (username !== '') {
+          const tag = '#' + Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit tag
+          const newUser = { username, tag };
+          this.users.push(newUser);
+          this.addUsernameInput = '';
+        }
+      },
+      removeUser(user) {
+        const index = this.users.indexOf(user);
+        if (index !== -1) {
+          this.users.splice(index, 1);
+        }
+      },
+      handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            // Update the profile picture directly
+            this.editedProfile.profilePicture = reader.result;
           };
-          this.groups.push(newGroup);
-          this.selectedGroup = newGroup;
-          this.saveToLocalStorage();
+          reader.readAsDataURL(file);
         }
-      },
-      deleteGroup(index) {
-        if (confirm('Are you sure you want to delete this group?')) {
-          this.groups.splice(index, 1);
-          this.selectedGroup = null;
-          this.saveToLocalStorage();
-        }
-      },
-      selectGroup(group) {
-        this.selectedGroup = group;
-      },
-      leaveGroup() {
-        this.selectedGroup = null;
-      },
-      saveToLocalStorage() {
-        localStorage.setItem('chatData', JSON.stringify({ messages: this.messages, groups: this.groups }));
-      },
-      loadFromLocalStorage() {
-        const storedData = localStorage.getItem('chatData');
-        if (storedData) {
-          const { messages, groups } = JSON.parse(storedData);
-          this.messages = messages;
-          this.groups = groups;
-        }
-      },
-    },
-    computed: {
-      userGroups() {
-        return this.groups.filter(group => group.users.some(user => user.tag === this.currentUser.tag));
       },
     },
     template: `
-      <div id="app" class="app">
-        <div class="sidebar">
-          <h3>Your Groups</h3>
-          <ul class="user-list">
-            <li v-for="(group, index) in userGroups" :key="index" class="user-list-item" @click="selectGroup(group)">
-              {{ group.name }}
-              <button @click="deleteGroup(index)">Delete</button>
-            </li>
-          </ul>
-          <button @click="createGroup">Create Group</button>
+      <div>
+        <div class="header">
+          <h3>Discord Chat</h3>
+          <div class="profile" v-if="!isEditingProfile" @click="startEditingProfile">
+            <img :src="currentUser.profilePicture" alt="Profile" style="width: 30px; height: 30px;">
+            <span>{{ currentUser.username + currentUser.tag }}</span>
+            <span v-if="currentUser.username === 'Aspwarm'" class="owner-tag">Owner</span>
+          </div>
+          <div v-else>
+            <input v-model="editedProfile.username" type="text" placeholder="Enter username">
+            <input v-model="editedProfile.tag" type="text" placeholder="Enter tag" maxlength="4">
+            <input type="file" @change="handleFileUpload">
+            <button @click="saveProfileChanges">Save</button>
+          </div>
         </div>
-        <div class="chat-container">
-          <div class="header">
-            <h2>{{ selectedGroup ? selectedGroup.name : 'Select a Group' }}</h2>
+        <div class="user-list">
+          <div v-for="user in users" :key="user.username" class="user-list-item">
+            {{ user.username + user.tag }}
+            <button @click="removeUser(user)">Remove</button>
           </div>
-          <div class="messages">
-            <div v-for="(message, index) in selectedGroup ? selectedGroup.messages : []" :key="index" class="message">
-              <p><span style="color: #7289DA;">{{ message.user.username + message.user.tag }}</span>: {{ message.text }}</p>
+        </div>
+        <div class="messages">
+          <div v-for="(message, index) in messages" :key="index" class="message">
+            <div class="profile">
+              <img :src="message.user.profilePicture" alt="Profile" style="width: 20px; height: 20px; margin-right: 5px;">
+              <span>{{ message.user.username + message.user.tag }}</span>
+              <span v-if="message.user.username === 'Aspwarm'" class="owner-tag">Owner</span>
             </div>
+            <p>{{ message.text }}</p>
+            <span class="timestamp">{{ message.timestamp }}</span>
           </div>
-          <div class="input-container">
-            <input v-model="messageInput" type="text" placeholder="Type your message">
-            <button @click="sendMessage">Send</button>
-          </div>
+        </div>
+        <div class="input-container">
+          <input v-model="messageInput" type="text" placeholder="Type your message">
+          <button @click="sendMessage">Send</button>
+        </div>
+        <div class="input-container">
+          <input v-model="addUsernameInput" type="text" placeholder="Enter username">
+          <button @click="addUser">Add User</button>
         </div>
       </div>
     `,
   });
 </script>
+
 </body>
 </html>
