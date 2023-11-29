@@ -23,6 +23,9 @@
       groups: [],
       selectedGroup: null,
     },
+    mounted() {
+      this.loadFromLocalStorage();
+    },
     methods: {
       sendMessage() {
         const message = this.messageInput.trim();
@@ -37,6 +40,7 @@
           };
           this.selectedGroup.messages.push(newMessage);
           this.messageInput = '';
+          this.saveToLocalStorage();
         }
       },
       createGroup() {
@@ -48,6 +52,7 @@
           };
           this.groups.push(newGroup);
           this.selectedGroup = newGroup;
+          this.saveToLocalStorage();
         }
       },
       selectGroup(group) {
@@ -55,6 +60,17 @@
       },
       leaveGroup() {
         this.selectedGroup = null;
+      },
+      saveToLocalStorage() {
+        localStorage.setItem('chatData', JSON.stringify({ messages: this.messages, groups: this.groups }));
+      },
+      loadFromLocalStorage() {
+        const storedData = localStorage.getItem('chatData');
+        if (storedData) {
+          const { messages, groups } = JSON.parse(storedData);
+          this.messages = messages;
+          this.groups = groups;
+        }
       },
     },
     template: `
