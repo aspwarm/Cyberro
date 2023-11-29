@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customizable Profile Chat Bot</title>
+  <title>Discord-Inspired Chat</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
     body {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
       background-color: #36393F;
@@ -19,13 +19,13 @@
     }
 
     #app {
-      width: 600px;
+      width: 800px;
       height: 600px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       border-radius: 8px;
-      background-color: #2F3136;
+      background-color: #2C2F33;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
@@ -42,11 +42,13 @@
       margin: 0;
       font-weight: 700;
       font-size: 16px;
+      color: #FFFFFF;
     }
 
     .profile {
       display: flex;
       align-items: center;
+      color: #FFFFFF;
     }
 
     .profile img {
@@ -70,22 +72,34 @@
 
     .user-list-item {
       margin-bottom: 5px;
+      color: #FFFFFF;
     }
 
     .messages {
       flex: 1;
       padding: 10px;
       overflow-y: auto;
+      background-color: #36393F;
     }
 
     .message {
       display: flex;
       flex-direction: column;
       margin-bottom: 10px;
+      background-color: #40444B;
+      border-radius: 8px;
+      padding: 10px;
     }
 
     .message p {
       margin: 0;
+      color: #FFFFFF;
+    }
+
+    .timestamp {
+      color: #72767d;
+      font-size: 10px;
+      margin-top: 5px;
     }
 
     .input-container {
@@ -126,77 +140,10 @@
   new Vue({
     el: '#app',
     data: {
-      messages: [],
-      users: [],
-      messageInput: '',
-      addUsernameInput: '',
-      currentUser: {
-        username: 'User',
-        tag: '#0000', // Placeholder tag
-        profilePicture: 'https://via.placeholder.com/50', // Placeholder image URL
-      },
-      isEditingProfile: false,
-      editedProfile: {
-        username: '',
-        tag: '',
-        profilePicture: '',
-      },
+      // ... (your existing data properties) ...
     },
     methods: {
-      sendMessage() {
-        const message = this.messageInput.trim();
-        if (message !== '') {
-          const newMessage = {
-            text: message,
-            user: {
-              username: this.currentUser.username,
-              tag: this.currentUser.tag,
-              profilePicture: this.currentUser.profilePicture,
-            },
-            timestamp: new Date().toLocaleTimeString(),
-          };
-          this.messages.push(newMessage);
-          this.messageInput = '';
-        }
-      },
-      startEditingProfile() {
-        this.isEditingProfile = true;
-        this.editedProfile.username = this.currentUser.username;
-        this.editedProfile.tag = this.currentUser.tag;
-        this.editedProfile.profilePicture = this.currentUser.profilePicture;
-      },
-      saveProfileChanges() {
-        this.currentUser.username = this.editedProfile.username;
-        this.currentUser.tag = this.editedProfile.tag;
-        this.currentUser.profilePicture = this.editedProfile.profilePicture;
-        this.isEditingProfile = false;
-      },
-      addUser() {
-        const username = this.addUsernameInput.trim();
-        if (username !== '') {
-          const tag = '#' + Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit tag
-          const newUser = { username, tag };
-          this.users.push(newUser);
-          this.addUsernameInput = '';
-        }
-      },
-      removeUser(user) {
-        const index = this.users.indexOf(user);
-        if (index !== -1) {
-          this.users.splice(index, 1);
-        }
-      },
-      handleFileUpload(event) {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = () => {
-            // Update the profile picture directly
-            this.editedProfile.profilePicture = reader.result;
-          };
-          reader.readAsDataURL(file);
-        }
-      },
+      // ... (your existing methods) ...
     },
     template: `
       <div>
@@ -209,7 +156,7 @@
           </div>
           <div v-else>
             <input v-model="editedProfile.username" type="text" placeholder="Enter username">
-            <input v-model="editedProfile.tag" type="text" placeholder="Enter tag" maxlength="4">
+            <input v-model="editedProfile.tag" type="text" placeholder="Enter tag" maxlength="4" :disabled="currentUser.tag !== '#0000'">
             <input type="file" @change="handleFileUpload">
             <button @click="saveProfileChanges">Save</button>
           </div>
