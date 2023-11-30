@@ -59,6 +59,10 @@
     .incorrect {
       color: red;
     }
+
+    .hint {
+      font-style: italic;
+    }
   </style>
 </head>
 
@@ -92,7 +96,9 @@
         // Move to the next level
         moveToNextLevel();
       } else {
-        resultElement.textContent = "Incorrect Password. Try again.";
+        // Provide a hint for the incorrect attempt
+        const hint = generateHint(currentLevel.password, passwordInput);
+        resultElement.textContent = `Incorrect Password. Hint: ${hint}`;
         resultElement.className = "incorrect";
       }
     }
@@ -114,6 +120,13 @@
       // Increment the current level index and save it to local storage
       const currentLevelIndex = parseInt(localStorage.getItem('currentLevelIndex')) || 0;
       localStorage.setItem('currentLevelIndex', currentLevelIndex + 1);
+    }
+
+    function generateHint(correctPassword, attemptedPassword) {
+      // Generate a hint by revealing part of the correct password
+      const hintLength = Math.min(correctPassword.length, attemptedPassword.length);
+      const hint = correctPassword.slice(0, hintLength);
+      return `<span class="hint">${hint}</span>`;
     }
   </script>
 
