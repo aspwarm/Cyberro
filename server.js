@@ -1,45 +1,38 @@
-// server.js
-
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost/twitterClone', { useNewUrlParser: true, useUnifiedTopology: true });
+// Serve static files (your HTML, CSS, etc.)
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Define a Tweet schema
-const tweetSchema = new mongoose.Schema({
-  user: String,
-  content: String,
-});
-
-const Tweet = mongoose.model('Tweet', tweetSchema);
-
+// Body parser middleware
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Example tweets data
+let tweets = [
+  { user: 'User1', content: 'This is a tweet!' },
+  { user: 'User2', content: 'Another tweet here.' },
+];
 
 // API endpoint to get tweets
-app.get('/tweets', async (req, res) => {
-  try {
-    const tweets = await Tweet.find();
-    res.json(tweets);
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
+app.get('/tweets', (req, res) => {
+  res.json(tweets);
 });
 
 // API endpoint to post a tweet
-app.post('/tweets', async (req, res) => {
+app.post('/tweets', (req, res) => {
   const { user, content } = req.body;
 
-  try {
-    const newTweet = new Tweet({ user, content });
-    await newTweet.save();
+  if (user && content) {
+    const newTweet = { user, content };
+    tweets.push(newTweet);
     res.json(newTweet);
-  } catch (error) {
-    res.status(500).send(error.message);
+  } else {
+    res.status(400).json({ error: 'User and content are required.' });
   }
 });
 
