@@ -4,56 +4,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Chat Platform</title>
+  <title>Password Game</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
       background-color: #f0f0f0;
-    }
-
-    header {
-      background-color: #333;
-      color: #fff;
-      padding: 10px;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
 
     main {
-      max-width: 600px;
-      margin: 20px auto;
+      text-align: center;
+      padding: 20px;
       background-color: #fff;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
-      overflow: hidden;
     }
 
-    nav {
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    input {
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+
+    button {
       padding: 10px;
-      text-align: center;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
     }
 
-    nav a {
-      margin: 0 10px;
-      text-decoration: none;
-      color: #333;
+    p {
+      margin-top: 20px;
+    }
+
+    .correct {
+      color: green;
+    }
+
+    .incorrect {
+      color: red;
     }
   </style>
 </head>
 
 <body>
 
-  <header>
-    <h1>Welcome to My Chat Platform</h1>
-  </header>
-
   <main>
-    <nav>
-      <a href="register.html">Register</a>
-      <a href="login.html">Login</a>
-    </nav>
+    <h1>Password Guessing Game</h1>
+    <label for="password">Enter the Password:</label>
+    <input type="password" id="password" placeholder="Type the password">
+    <button onclick="checkPassword()">Check Password</button>
+    <p id="result"></p>
   </main>
+
+  <script>
+    const levels = [
+      { password: "level1", message: "Congratulations! You've completed Level 1." },
+      { password: "level2", message: "Congratulations! You've completed Level 2." },
+      { password: "level3", message: "Congratulations! You've completed Level 3." },
+    ];
+
+    function checkPassword() {
+      const passwordInput = document.getElementById('password').value;
+      const resultElement = document.getElementById('result');
+
+      // Get the current level
+      const currentLevel = getCurrentLevel();
+
+      if (passwordInput === currentLevel.password) {
+        resultElement.textContent = currentLevel.message;
+        resultElement.className = "correct";
+        // Move to the next level
+        moveToNextLevel();
+      } else {
+        resultElement.textContent = "Incorrect Password. Try again.";
+        resultElement.className = "incorrect";
+      }
+    }
+
+    function getCurrentLevel() {
+      // Retrieve the current level index from local storage or default to 0
+      const currentLevelIndex = parseInt(localStorage.getItem('currentLevelIndex')) || 0;
+      return levels[currentLevelIndex];
+    }
+
+    function moveToNextLevel() {
+      // Increment the current level index and save it to local storage
+      const currentLevelIndex = parseInt(localStorage.getItem('currentLevelIndex')) || 0;
+      localStorage.setItem('currentLevelIndex', currentLevelIndex + 1);
+    }
+  </script>
 
 </body>
 
