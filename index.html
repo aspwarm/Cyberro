@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Discord</title>
+  <title>Global Chat</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
-      body {
+       body {
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
@@ -224,7 +224,14 @@
       methods: {
         sendMessage() {
           const message = this.messageInput.trim();
-          if (message !== '') {
+
+          // List of words to filter
+          const forbiddenWords = ['nigga', 'bitch', 'faggot'];
+
+          // Check if the message contains forbidden words
+          const containsForbiddenWord = forbiddenWords.some(word => message.toLowerCase().includes(word));
+
+          if (message !== '' && !containsForbiddenWord) {
             const newMessage = {
               text: message,
               user: {
@@ -236,71 +243,18 @@
             };
             this.messages.push(newMessage);
             this.messageInput = '';
+          } else {
+            // You can provide feedback to the user that their message contains inappropriate language
+            alert('Your message contains inappropriate language. Please refrain from using offensive words.');
           }
         },
-        startEditingProfile() {
-          this.isEditingProfile = true;
-          this.editedProfile.username = this.currentUser.username;
-          this.editedProfile.tag = this.currentUser.tag;
-          this.editedProfile.profilePicture = this.currentUser.profilePicture;
-        },
-        saveProfileChanges() {
-          this.currentUser.username = this.editedProfile.username;
-          this.editedProfile.tag = this.currentUser.tag;
-          this.currentUser.profilePicture = this.editedProfile.profilePicture;
-          this.isEditingProfile = false;
-        },
-        removeUser(user) {
-          const index = this.users.indexOf(user);
-          if (index !== -1) {
-            this.users.splice(index, 1);
-          }
-        },
-        handleFileUpload(event) {
-          const file = event.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-              this.editedProfile.profilePicture = reader.result;
-            };
-            reader.readAsDataURL(file);
-          }
-        },
-        toggleEmojiPicker() {
-          this.showEmojiPicker = !this.showEmojiPicker;
-        },
-        selectEmoji(emoji) {
-          this.selectedEmoji = emoji;
-          this.messageInput += emoji;
-          this.showEmojiPicker = false;
-        },
-        toggleUserSettings() {
-          this.showUserSettings = !this.showUserSettings;
-        },
+        // ... (existing methods)
       },
       template: `
         <div id="app">
           <div class="main-content">
             <div class="chat-container">
-              <div class="header">
-                <div class="user-settings" @click="toggleUserSettings">User Settings</div>
-              </div>
-              <div class="user-list">
-                <div v-for="user in users" :key="user.username" class="user-list-item">
-                  {{ user.username + user.tag }}
-                  <button @click="removeUser(user)">Remove</button>
-                </div>
-              </div>
-              <div class="messages">
-                <div v-for="(message, index) in messages" :key="index" class="message">
-                  <div class="profile">
-                    <img :src="message.user.profilePicture" alt="Profile" style="width: 20px; height: 20px; margin-right: 5px; border-radius: 50%;">
-                    <span>{{ message.user.username + message.user.tag }}</span>
-                  </div>
-                  <p>{{ message.text }}</p>
-                  <span class="timestamp">{{ message.timestamp }}</span>
-                </div>
-              </div>
+              <!-- ... (existing content) ... -->
               <div class="input-container">
                 <input v-model="messageInput" type="text" placeholder="Type your message" @keyup.enter="sendMessage">
                 <button @click="toggleEmojiPicker">😊</button>
@@ -309,20 +263,10 @@
                 </div>
                 <button @click="sendMessage">Send</button>
               </div>
-              <!-- Move the profile section here -->
-              <div class="profile" @click="startEditingProfile">
-                <img :src="currentUser.profilePicture" alt="Profile" style="width: 30px; height: 30px; border-radius: 50%;">
-                <div style="margin-left: 10px;"> <!-- Added margin to move it a little to the right -->
-                  <span>{{ currentUser.username }}</span>
-                  <span class="owner-tag">{{ currentUser.tag }}</span>
-                </div>
-              </div>
+              <!-- ... (existing content) ... -->
             </div>
             <div class="user-settings-popup" :class="{ 'active': showUserSettings }">
-              <input v-model="editedProfile.username" type="text" placeholder="Enter username">
-              <input type="file" @change="handleFileUpload">
-              <button @click="saveProfileChanges">Save</button>
-              <button class="cancel" @click="toggleUserSettings">Cancel</button>
+              <!-- ... (existing content) ... -->
             </div>
           </div>
         </div>
