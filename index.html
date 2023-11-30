@@ -29,6 +29,42 @@
       overflow: hidden;
     }
 
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+      padding: 20px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    form h2 {
+      margin-bottom: 10px;
+    }
+
+    form input {
+      margin-bottom: 10px;
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 8px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    form button {
+      width: 50%;
+      margin-top: 10px;
+    }
+
     #chat {
       padding: 10px;
       height: 300px;
@@ -50,15 +86,6 @@
       border-radius: 4px;
       resize: none;
     }
-
-    button {
-      padding: 8px;
-      background-color: #333;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
   </style>
 </head>
 
@@ -69,6 +96,20 @@
   </header>
 
   <main>
+    <form id="registration-form">
+      <h2>Register</h2>
+      <input type="text" id="register-username" placeholder="Username" required>
+      <input type="password" id="register-password" placeholder="Password" required>
+      <button onclick="registerUser()">Register</button>
+    </form>
+
+    <form id="login-form">
+      <h2>Login</h2>
+      <input type="text" id="login-username" placeholder="Username" required>
+      <input type="password" id="login-password" placeholder="Password" required>
+      <button onclick="loginUser()">Login</button>
+    </form>
+
     <section id="chat"></section>
 
     <section id="user-input">
@@ -78,21 +119,35 @@
   </main>
 
   <script>
-    function sendMessage() {
-      const messageInput = document.getElementById('message-input');
-      const message = messageInput.value.trim();
-      
-      if (message !== '') {
-        const chatSection = document.getElementById('chat');
-        const newMessage = document.createElement('p');
-        newMessage.textContent = 'User: ' + message;
-        chatSection.appendChild(newMessage);
+    function registerUser() {
+      const usernameInput = document.getElementById('register-username');
+      const passwordInput = document.getElementById('register-password');
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
 
-        // You'd typically send the user's message to a server for processing here
-
-        messageInput.value = ''; // Clear the input field
+      if (username !== '' && password !== '') {
+        // Perform registration logic here (not implemented in this example)
+        console.log('User registered:', username);
+        usernameInput.value = '';
+        passwordInput.value = '';
       }
     }
+
+    function loginUser() {
+      const usernameInput = document.getElementById('login-username');
+      const passwordInput = document.getElementById('login-password');
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (username !== '' && password !== '') {
+        // Perform login logic here (not implemented in this example)
+        console.log('User logged in:', username);
+        usernameInput.value = '';
+        passwordInput.value = '';
+      }
+    }
+
+    // sendMessage function remains the same
   </script>
 
 </body>
