@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Password Game</title>
+  <title>Password Strength Game</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -69,18 +69,18 @@
 <body>
 
   <main>
-    <h1>Password Guessing Game</h1>
-    <label for="password">Enter the Password:</label>
-    <input type="password" id="password" placeholder="Type the password">
-    <button onclick="checkPassword()">Check Password</button>
+    <h1>Password Strength Game</h1>
+    <label for="password">Create a Strong Password:</label>
+    <input type="password" id="password" placeholder="Type your password">
+    <button onclick="checkPassword()">Check Password Strength</button>
     <p id="result"></p>
   </main>
 
   <script>
     const levels = [
-      { password: "level1", message: "Congratulations! You've completed Level 1." },
-      { password: "level2", message: "Congratulations! You've completed Level 2." },
-      { password: "level3", message: "Congratulations! You've completed Level 3." },
+      { strength: 'Weak', message: 'Your password is weak. Try adding numbers and special characters.' },
+      { strength: 'Moderate', message: 'Your password is moderate. Consider adding more complexity.' },
+      { strength: 'Strong', message: 'Congratulations! Your password is strong.' },
     ];
 
     function checkPassword() {
@@ -88,45 +88,26 @@
       const resultElement = document.getElementById('result');
 
       // Get the current level
-      const currentLevel = getCurrentLevel();
+      const currentLevel = getCurrentLevel(passwordInput);
 
-      if (passwordInput === currentLevel.password) {
-        resultElement.textContent = currentLevel.message;
-        resultElement.className = "correct";
-        // Move to the next level
-        moveToNextLevel();
-      } else {
-        // Provide a hint for the incorrect attempt
-        const hint = generateHint(currentLevel.password, passwordInput);
-        resultElement.textContent = `Incorrect Password. Hint: ${hint}`;
-        resultElement.className = "incorrect";
-      }
+      resultElement.textContent = `${currentLevel.message} Password Strength: ${currentLevel.strength}`;
+      resultElement.className = currentLevel.strength.toLowerCase();
     }
 
-    function getCurrentLevel() {
-      // Retrieve the current level index from local storage or default to 0
-      const currentLevelIndex = parseInt(localStorage.getItem('currentLevelIndex')) || 0;
+    function getCurrentLevel(password) {
+      // Evaluate password strength and determine the current level
+      let strength = 'Weak';
 
-      // If the current level index exceeds the number of levels, reset it to 0
-      if (currentLevelIndex >= levels.length) {
-        localStorage.setItem('currentLevelIndex', 0);
-        return levels[0];
+      if (password.length >= 8) {
+        strength = 'Moderate';
       }
 
-      return levels[currentLevelIndex];
-    }
+      if (password.length >= 12 && /[0-9]/.test(password) && /[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+        strength = 'Strong';
+      }
 
-    function moveToNextLevel() {
-      // Increment the current level index and save it to local storage
-      const currentLevelIndex = parseInt(localStorage.getItem('currentLevelIndex')) || 0;
-      localStorage.setItem('currentLevelIndex', currentLevelIndex + 1);
-    }
-
-    function generateHint(correctPassword, attemptedPassword) {
-      // Generate a hint by revealing part of the correct password
-      const hintLength = Math.min(correctPassword.length, attemptedPassword.length);
-      const hint = correctPassword.slice(0, hintLength);
-      return `<span class="hint">${hint}</span>`;
+      // Return the corresponding level
+      return levels.find(level => level.strength === strength);
     }
   </script>
 
