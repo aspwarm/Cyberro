@@ -100,6 +100,13 @@
     function getCurrentLevel() {
       // Retrieve the current level index from local storage or default to 0
       const currentLevelIndex = parseInt(localStorage.getItem('currentLevelIndex')) || 0;
+
+      // If the current level index exceeds the number of levels, reset it to 0
+      if (currentLevelIndex >= levels.length) {
+        localStorage.setItem('currentLevelIndex', 0);
+        return levels[0];
+      }
+
       return levels[currentLevelIndex];
     }
 
