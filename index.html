@@ -92,8 +92,8 @@
 
   <script>
     const levels = [
-      { strength: 'Weak', message: 'Your password is weak. Try adding:', requirements: ['at least 8 characters'] },
-      { strength: 'Moderate', message: 'Your password is moderate. Consider adding:', requirements: ['at least 12 characters', 'numbers', 'special characters'] },
+      { strength: 'Weak', message: 'Your password is weak. Try adding:', requirements: getRandomRequirements() },
+      { strength: 'Moderate', message: 'Your password is moderate. Consider adding:', requirements: getRandomRequirements() },
       { strength: 'Strong', message: 'Congratulations! Your password is strong.' },
     ];
 
@@ -135,6 +135,25 @@
 
       // Return the corresponding level
       return levels.find(level => level.strength === strength);
+    }
+
+    function getRandomRequirements() {
+      const requirements = [];
+      const length = Math.floor(Math.random() * 5) + 8; // Random length between 8 and 12 characters
+      const hasNumbers = Math.random() < 0.5;
+      const hasSpecialChars = Math.random() < 0.5;
+
+      requirements.push(`at least ${length} characters`);
+
+      if (hasNumbers) {
+        requirements.push('numbers');
+      }
+
+      if (hasSpecialChars) {
+        requirements.push('special characters');
+      }
+
+      return requirements;
     }
   </script>
 
