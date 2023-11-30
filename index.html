@@ -4,64 +4,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Twitter-like Site</title>
+  <title>My Chat Platform</title>
   <style>
     body {
-      font-family: 'Helvetica', sans-serif;
+      font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f5f8fa; /* Twitter-like background color */
+      background-color: #f0f0f0;
     }
 
     header {
-      background-color: #1da1f2; /* Twitter-like blue color */
+      background-color: #333;
+      color: #fff;
       padding: 10px;
       text-align: center;
-      color: #fff;
-      box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
     }
 
     main {
       max-width: 600px;
       margin: 20px auto;
       background-color: #fff;
-      box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
       overflow: hidden;
     }
 
-    .tweet {
-      border-bottom: 1px solid #e1e8ed;
+    #chat {
       padding: 10px;
+      height: 300px;
+      overflow-y: scroll;
+      border-bottom: 1px solid #ddd;
     }
 
-    .tweet:last-child {
-      border-bottom: none;
-    }
-
-    .tweet p {
-      margin: 0;
-    }
-
-    footer {
-      background-color: #fff;
-      padding: 10px;
-      text-align: center;
-      margin-top: 20px;
-      box-shadow: 0px -1px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .compose {
-      padding: 10px;
+    #user-input {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #e1e8ed;
+      padding: 10px;
     }
 
-    textarea {
-      width: 80%;
+    #message-input {
+      flex: 1;
       padding: 8px;
+      margin-right: 10px;
       border: 1px solid #ddd;
       border-radius: 4px;
       resize: none;
@@ -69,7 +53,7 @@
 
     button {
       padding: 8px;
-      background-color: #1da1f2; /* Twitter-like blue color */
+      background-color: #333;
       color: #fff;
       border: none;
       border-radius: 4px;
@@ -81,29 +65,35 @@
 <body>
 
   <header>
-    <h1>My Twitter-like Site</h1>
+    <h1>Welcome to My Chat Platform</h1>
   </header>
 
   <main>
-    <!-- Tweets -->
-    <div class="tweet">
-      <p>User1: This is a tweet!</p>
-    </div>
-    <div class="tweet">
-      <p>User2: Another tweet here.</p>
-    </div>
-    <!-- Add more tweets as needed -->
+    <section id="chat"></section>
 
-    <!-- Compose Tweet -->
-    <div class="compose">
-      <textarea placeholder="Compose your tweet..."></textarea>
-      <button>Tweet</button>
-    </div>
+    <section id="user-input">
+      <input type="text" id="message-input" placeholder="Type your message">
+      <button onclick="sendMessage()">Send</button>
+    </section>
   </main>
 
-  <footer>
-    <p>&copy; 2023 My Twitter-like Site</p>
-  </footer>
+  <script>
+    function sendMessage() {
+      const messageInput = document.getElementById('message-input');
+      const message = messageInput.value.trim();
+      
+      if (message !== '') {
+        const chatSection = document.getElementById('chat');
+        const newMessage = document.createElement('p');
+        newMessage.textContent = 'User: ' + message;
+        chatSection.appendChild(newMessage);
+
+        // You'd typically send the user's message to a server for processing here
+
+        messageInput.value = ''; // Clear the input field
+      }
+    }
+  </script>
 
 </body>
 
