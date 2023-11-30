@@ -4,133 +4,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Best Forum</title>
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f9f9f9;
-      color: #333;
-    }
-
-    header {
-      background-color: #007bff;
-      color: #fff;
-      padding: 15px;
-      text-align: center;
-    }
-
-    main {
-      max-width: 800px;
-      margin: 20px auto;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      padding: 20px;
-    }
-
-    h2 {
-      color: #007bff;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 20px;
-    }
-
-    input, textarea {
-      margin-bottom: 15px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-
-    button {
-      padding: 12px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    .post {
-      border-bottom: 1px solid #ddd;
-      padding: 15px 0;
-    }
-
-    .post:last-child {
-      border-bottom: none;
-    }
-
-    footer {
-      background-color: #007bff;
-      color: #fff;
-      text-align: center;
-      padding: 15px;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-    }
-  </style>
+  <title>AI Chatbot</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-
-  <header>
-    <h1>Best Forum</h1>
-  </header>
-
-  <main>
-    <h2>New Post</h2>
-    <form>
-      <label for="username">Username:</label>
-      <input type="text" id="username" required>
-
-      <label for="title">Post Title:</label>
-      <input type="text" id="title" required>
-
-      <label for="content">Post Content:</label>
-      <textarea id="content" required></textarea>
-
-      <button type="button" onclick="submitPost()">Submit Post</button>
-    </form>
-
-    <h2>Latest Posts</h2>
-    <div id="posts"></div>
-  </main>
-
-  <footer>
-    &copy; 2023 Best Forum
-  </footer>
-
-  <script>
-    function submitPost() {
-      const username = document.getElementById('username').value;
-      const title = document.getElementById('title').value;
-      const content = document.getElementById('content').value;
-
-      if (username && title && content) {
-        const postDiv = document.getElementById('posts');
-        const postElement = document.createElement('div');
-        postElement.className = 'post';
-        postElement.innerHTML = `<strong>${username}</strong> - <em>${title}</em><p>${content}</p>`;
-        postDiv.prepend(postElement);
-
-        // Clear form fields
-        document.getElementById('username').value = '';
-        document.getElementById('title').value = '';
-        document.getElementById('content').value = '';
-      } else {
-        alert('Please fill in all fields.');
-      }
-    }
-  </script>
-
+  <div class="chat-container">
+    <div id="chat-display"></div>
+    <div class="user-input">
+      <input type="text" id="user-input" placeholder="Ask me anything...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
 </body>
 
 </html>
